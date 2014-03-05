@@ -320,6 +320,7 @@ func transliterateTamilToEnglish(tamilWord string) []string {
 				}
 			}
 		} else {
+			/* grandham thavir */
 			//fmt.Println("Character mapping not available for [" + tamilChar + "]")
 			return nil
 		}
@@ -421,7 +422,7 @@ func main() {
 				englishWords := transliterateTamilToEnglish(tamilWord)
 
 				if englishWords == nil {
-					/* grantham thavir */
+					/* grandham thavir */
 					continue
 				}
 
