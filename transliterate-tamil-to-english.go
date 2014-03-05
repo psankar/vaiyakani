@@ -418,7 +418,9 @@ func main() {
 		 * linux style file line endings */
 		for _, line := range lines {
 			if line != "" {
-				tamilWord := strings.Split(line, ",")[1:][0]
+				contents := strings.Split(line, ",")
+				score := contents[0]
+				tamilWord := contents[1:][0]
 				englishWords := transliterateTamilToEnglish(tamilWord)
 
 				if englishWords == nil {
@@ -426,9 +428,9 @@ func main() {
 					continue
 				}
 
-				fmt.Print(tamilWord)
+				fmt.Print(score + "," + tamilWord)
 				for _, englishWord := range englishWords {
-					fmt.Print(" " + englishWord)
+					fmt.Print("," + englishWord)
 				}
 				fmt.Println()
 			}
