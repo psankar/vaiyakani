@@ -414,7 +414,6 @@ func main() {
 		lines := strings.Split(string(fileBytes), "\n")
 		fmt.Print("Number of input lines")
 		fmt.Println(len(lines))
-		v := make(map[string]string, len(lines))
 
 		/* note that this will work with only
 		 * linux style file line endings */
@@ -424,13 +423,10 @@ func main() {
 				englishWords := transliterateTamilToEnglish(tamilWord)
 				fmt.Println(tamilWord, englishWords)
 				for _, englishWord := range englishWords {
-					v[englishWord] = line
 				}
 			}
 		}
 
 		fmt.Println("********************************************\nTransliteration complete")
-
-		fmt.Println(len(v))
 	}
 }
