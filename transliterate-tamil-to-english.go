@@ -320,7 +320,7 @@ func transliterateTamilToEnglish(tamilWord string) []string {
 				}
 			}
 		} else {
-			fmt.Println("Character mapping not available for [" + tamilChar + "]")
+			//fmt.Println("Character mapping not available for [" + tamilChar + "]")
 			return nil
 		}
 
@@ -402,7 +402,7 @@ func main() {
 	initializeDictionary()
 
 	for _, corpusFile := range os.Args[1:] {
-		fmt.Println("Analyzing " + corpusFile)
+		//fmt.Println("Analyzing " + corpusFile)
 
 		fileBytes, err := ioutil.ReadFile(corpusFile)
 		if err != nil {
@@ -412,8 +412,6 @@ func main() {
 		}
 
 		lines := strings.Split(string(fileBytes), "\n")
-		fmt.Print("Number of input lines")
-		fmt.Println(len(lines))
 
 		/* note that this will work with only
 		 * linux style file line endings */
@@ -421,12 +419,19 @@ func main() {
 			if line != "" {
 				tamilWord := strings.Split(line, ",")[1:][0]
 				englishWords := transliterateTamilToEnglish(tamilWord)
-				fmt.Println(tamilWord, englishWords)
-				for _, englishWord := range englishWords {
+
+				if englishWords == nil {
+					/* grantham thavir */
+					continue
 				}
+
+				fmt.Print(tamilWord)
+				for _, englishWord := range englishWords {
+					fmt.Print(" " + englishWord)
+				}
+				fmt.Println()
 			}
 		}
 
-		fmt.Println("********************************************\nTransliteration complete")
 	}
 }
