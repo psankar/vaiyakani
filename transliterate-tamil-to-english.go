@@ -14,7 +14,7 @@ func initializeDictionary() {
 	x = make(map[string][]string)
 
 	x["அ"] = []string{"a"}
-	x["ஆ"] = []string{"a"}
+	x["ஆ"] = []string{"a", "aa"}
 	x["இ"] = []string{"i"}
 	x["ஈ"] = []string{"i"}
 	x["உ"] = []string{"u"}
