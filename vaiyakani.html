@@ -1,0 +1,35 @@
+<html>
+<body onload=inittrie()>
+</body>
+<script>
+function inittrie() {
+	var words = [
+	{"key":"hello", "value": "HELLO"},
+	{"key":"GOD", "value": "GOD"},
+	{"key":"help", "value": "HELP"},
+	{"key":"helper", "value": "HELPER"},
+	{"key":"helps", "value": "HELPS"}
+	];
+	var trie = {};
+
+	/* Setup Trie */
+	for (var i = 0, l = words.length; i < l; i++ ) {
+		var word = words[i].key;
+		var letters = word.split("");
+		var active = trie;
+
+		for (var j = 0; j < letters.length; j++ ) {
+			var letter = letters[j];
+			var pos = active[letter];
+
+			if (pos == null) {
+				active[letter] = {};
+			}
+			active = active[letter];
+		}
+		active.value = words[i].value
+	}
+	alert(JSON.stringify(trie, undefined, 4));
+}
+</script>
+</html>
