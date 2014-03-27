@@ -1,5 +1,6 @@
 <html>
-<body onload=inittrie()>
+<body>
+<label>Select a file</label><input id="fd" type="file" />
 </body>
 <script>
 function inittrie() {
@@ -12,6 +13,7 @@ function inittrie() {
 	];
 	var trie = {};
 
+//<body onload=inittrie()>
 	/* Setup Trie */
 	for (var i = 0, l = words.length; i < l; i++ ) {
 		var word = words[i].key;
@@ -31,5 +33,20 @@ function inittrie() {
 	}
 	alert(JSON.stringify(trie, undefined, 4));
 }
+
+function readFile(evt) {
+	var files = evt.target.files;
+
+	for (var i = 0, f; f = files[i]; i++) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+			alert(e.target.result);
+		}
+		reader.readAsText(f);
+	}
+}
+
+document.getElementById('fd').addEventListener('change', readFile, false);
+
 </script>
 </html>
