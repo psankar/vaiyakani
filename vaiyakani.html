@@ -1,38 +1,9 @@
 <html>
 <body>
 <label>Select a file</label><input id="fd" type="file" />
+<textarea id="output" rows=40 cols=60></textarea>
 </body>
 <script>
-function inittrie() {
-	var words = [
-	{"key":"hello", "value": "HELLO"},
-	{"key":"GOD", "value": "GOD"},
-	{"key":"help", "value": "HELP"},
-	{"key":"helper", "value": "HELPER"},
-	{"key":"helps", "value": "HELPS"}
-	];
-	var trie = {};
-
-//<body onload=inittrie()>
-	/* Setup Trie */
-	for (var i = 0, l = words.length; i < l; i++ ) {
-		var word = words[i].key;
-		var letters = word.split("");
-		var active = trie;
-
-		for (var j = 0; j < letters.length; j++ ) {
-			var letter = letters[j];
-			var pos = active[letter];
-
-			if (pos == null) {
-				active[letter] = {};
-			}
-			active = active[letter];
-		}
-		active.value = words[i].value
-	}
-	alert(JSON.stringify(trie, undefined, 4));
-}
 
 function readFile(evt) {
 	var files = evt.target.files;
@@ -40,10 +11,40 @@ function readFile(evt) {
 	for (var i = 0, f; f = files[i]; i++) {
 		var reader = new FileReader();
 		reader.onload = function (e) {
-			alert(e.target.result);
-		}
+			var lines = e.target.result.split("\n");
+
+			var trie = {};
+			for (var lineIndex = 0, line; line = lines[lineIndex]; lineIndex++) {
+
+				var words = line.split(",");
+				var score = words[0];
+				var tamilWord = words[1];
+				var englishWords = words.slice(2);
+
+				for (var engIndex = 0, englishWord; englishWord = englishWords[engIndex]; engIndex++) {
+					var letters = englishWord.split("");
+					var active = trie;
+
+					for (var j = 0; j < letters.length; j++ ) {
+						var letter = letters[j];
+						var pos = active[letter];
+
+						if (pos == null) {
+							active[letter] = {};
+						}
+						active = active[letter];
+					}
+					/* TODO: Add the score too */
+					active.value = tamilWord;
+				} /* End of English words loop */
+			} /* End of lines loop */
+
+			/* TODO: Offer to save the JSON as a file */
+			document.getElementById("output").value += JSON.stringify(trie, undefined, 4);
+
+		} /* End of the fileread closure */
 		reader.readAsText(f);
-	}
+	} /* End of files loop */
 }
 
 document.getElementById('fd').addEventListener('change', readFile, false);
