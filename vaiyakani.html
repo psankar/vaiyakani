@@ -1,7 +1,7 @@
 <html>
 <body>
 <label>Select a file</label><input id="fd" type="file" />
-<textarea id="output" rows=40 cols=60></textarea>
+<div id="output"></div>
 </body>
 <script>
 
@@ -39,8 +39,16 @@ function readFile(evt) {
 				} /* End of English words loop */
 			} /* End of lines loop */
 
-			/* TODO: Offer to save the JSON as a file */
-			document.getElementById("output").value += JSON.stringify(trie, undefined, 4);
+			var json = JSON.stringify(trie, undefined, 4);
+			var blob = new Blob([json], {type: "application/json"});
+			var url  = URL.createObjectURL(blob);
+
+			var a = document.createElement('a');
+			a.download    = "trie.json";
+			a.href        = url;
+			a.textContent = "Download trie.json";
+
+			document.getElementById('output').appendChild(a);
 
 		} /* End of the fileread closure */
 		reader.readAsText(f);
