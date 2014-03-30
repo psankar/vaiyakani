@@ -2,6 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"io/ioutil"
+	"strings"
+	"strconv"
 )
 
 type result struct {
@@ -143,13 +147,35 @@ var t, trieRoot *trie
 func main() {
 
 	t = NewTrie()
-	t.AddWord([]byte("velivantha"), result{"வெளிவந்த", 143})
-	t.AddWord([]byte("irukkathu"), result{"இருக்காது", 18})
-	t.AddWord([]byte("ithanai"), result{"இத்தனை", 37})
-	t.AddWord([]byte("illamale"), result{"இல்லாமலே", 22})
-	t.AddWord([]byte("ippadithan"), result{"இப்படித்தான்", 13})
-	t.AddWord([]byte("irundhanar"), result{"இருந்தனர்", 12})
-	//t.PrintTrie()
+	for _, engTransliteratedFile := range os.Args[1:] {
+		fileBytes, err := ioutil.ReadFile(engTransliteratedFile)
+		if err != nil {
+			fmt.Println("Error opening file:")
+			fmt.Println(err)
+			continue
+		}
+
+		lines := strings.Split(string(fileBytes), "\n")
+
+		/* note that this will work with only
+		 * linux style file line endings */
+		for _, line := range lines {
+			if line != "" {
+				contents := strings.Split(line, ",")
+				score, _ := strconv.Atoi(contents[0])
+				tamilWord := contents[1:][0]
+				englishWords := contents[2:]
+
+				//fmt.Print(score, tamilWord)
+				for _, englishWord := range englishWords {
+					//fmt.Print(englishWord, " ")
+					t.AddWord([]byte(englishWord), result{tamilWord, score})
+				}
+				//fmt.Println()
+			}
+		}
+
+	}
 
 	trieRoot = t
 	trieRoot.PrintAsJSON()
