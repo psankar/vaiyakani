@@ -91,19 +91,71 @@ func (t *trie) GetSuggestions(ch byte) ([]string, *trie) {
 	}
 }
 
+func (t *trie) PrintAsJSON() {
+	fmt.Println("{")
+	indentLevel := 4
+	for k, ch := range t.children {
+		for i := 0; i < indentLevel; i++ {
+			fmt.Print(" ")
+		}
+		fmt.Printf("\"%s\": {\n", string(k))
+
+		if len(ch.values) != 0 {
+			for j := 0; j < indentLevel+4; j++ {
+				fmt.Print(" ")
+			}
+			fmt.Printf("\"value\": \"%s\",\n", ch.values[0].word)
+		}
+		printAsJSON(ch, indentLevel+4)
+
+		for i := 0; i < indentLevel; i++ {
+			fmt.Print(" ")
+		}
+		fmt.Println("},")
+	}
+	fmt.Println("}")
+}
+
+func printAsJSON(t *trie, indentLevel int) {
+	for k, ch := range t.children {
+		for i := 0; i < indentLevel; i++ {
+			fmt.Print(" ")
+		}
+		fmt.Printf("\"%s\": {\n", string(k))
+
+		if len(ch.values) != 0 {
+			for j := 0; j < indentLevel+4; j++ {
+				fmt.Print(" ")
+			}
+			fmt.Printf("\"value\": \"%s\",\n", ch.values[0].word)
+		}
+		printAsJSON(ch, indentLevel+4)
+
+		for i := 0; i < indentLevel; i++ {
+			fmt.Print(" ")
+		}
+		fmt.Println("},")
+	}
+}
+
+var t, trieRoot *trie
+
 func main() {
 
-	t := NewTrie()
+	t = NewTrie()
 	t.AddWord([]byte("velivantha"), result{"வெளிவந்த", 143})
 	t.AddWord([]byte("irukkathu"), result{"இருக்காது", 18})
 	t.AddWord([]byte("ithanai"), result{"இத்தனை", 37})
 	t.AddWord([]byte("illamale"), result{"இல்லாமலே", 22})
 	t.AddWord([]byte("ippadithan"), result{"இப்படித்தான்", 13})
 	t.AddWord([]byte("irundhanar"), result{"இருந்தனர்", 12})
-	t.PrintTrie()
+	//t.PrintTrie()
 
-	trieRoot := t
+	trieRoot = t
+	trieRoot.PrintAsJSON()
+}
 
+func testTrie() {
 	inputs := []string{"irukkathuv", "ithanai", "illamale", "velivantha"}
 	for _, input := range inputs {
 
