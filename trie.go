@@ -96,7 +96,6 @@ func (t *trie) GetSuggestions(ch byte) ([]string, *trie) {
 }
 
 func (t *trie) PrintAsJSON() {
-	fmt.Println("{")
 	indentLevel := 4
 	for k, ch := range t.children {
 		for i := 0; i < indentLevel; i++ {
@@ -105,10 +104,12 @@ func (t *trie) PrintAsJSON() {
 		fmt.Printf("\"%s\": {\n", string(k))
 
 		if len(ch.values) != 0 {
-			for j := 0; j < indentLevel+4; j++ {
-				fmt.Print(" ")
+			for _, value := range ch.values {
+				for j := 0; j < indentLevel+4; j++ {
+					fmt.Print(" ")
+				}
+				fmt.Printf("\"value\": \"%s\",\n", value.word)
 			}
-			fmt.Printf("\"value\": \"%s\",\n", ch.values[0].word)
 		}
 		printAsJSON(ch, indentLevel+4)
 
@@ -117,7 +118,6 @@ func (t *trie) PrintAsJSON() {
 		}
 		fmt.Println("},")
 	}
-	fmt.Println("}")
 }
 
 func printAsJSON(t *trie, indentLevel int) {
@@ -146,39 +146,49 @@ var t, trieRoot *trie
 
 func main() {
 
-	t = NewTrie()
-	for _, engTransliteratedFile := range os.Args[1:] {
-		fileBytes, err := ioutil.ReadFile(engTransliteratedFile)
-		if err != nil {
-			fmt.Println("Error opening file:")
-			fmt.Println(err)
-			continue
-		}
+	fmt.Println("{")
 
-		lines := strings.Split(string(fileBytes), "\n")
+	for ch := 'a'; ch <= 'z'; ch++ {
+		fmt.Fprintf(os.Stderr, "%c\n", ch)
 
-		/* note that this will work with only
-		 * linux style file line endings */
-		for _, line := range lines {
-			if line != "" {
-				contents := strings.Split(line, ",")
-				score, _ := strconv.Atoi(contents[0])
-				tamilWord := contents[1:][0]
-				englishWords := contents[2:]
-
-				//fmt.Print(score, tamilWord)
-				for _, englishWord := range englishWords {
-					//fmt.Print(englishWord, " ")
-					t.AddWord([]byte(englishWord), result{tamilWord, score})
-				}
-				//fmt.Println()
+		t = NewTrie()
+		for _, engTransliteratedFile := range os.Args[1:] {
+			fileBytes, err := ioutil.ReadFile(engTransliteratedFile)
+			if err != nil {
+				fmt.Println("Error opening file:")
+				fmt.Println(err)
+				continue
 			}
+
+			lines := strings.Split(string(fileBytes), "\n")
+
+			/* note that this will work with only
+			* linux style file line endings */
+			for _, line := range lines {
+				if line != "" {
+					contents := strings.Split(line, ",")
+					score, _ := strconv.Atoi(contents[0])
+					tamilWord := contents[1:][0]
+					englishWords := contents[2:]
+
+					//fmt.Print(score, tamilWord)
+					for _, englishWord := range englishWords {
+						//fmt.Print(englishWord, " ")
+						if rune(englishWord[0]) == ch {
+							t.AddWord([]byte(englishWord), result{tamilWord, score})
+						}
+					}
+					//fmt.Println()
+				}
+			}
+
 		}
 
+		trieRoot = t
+		trieRoot.PrintAsJSON()
 	}
 
-	trieRoot = t
-	trieRoot.PrintAsJSON()
+	fmt.Println("}")
 }
 
 func testTrie() {
