@@ -190,21 +190,3 @@ func main() {
 
 	fmt.Println("}")
 }
-
-func testTrie() {
-	inputs := []string{"irukkathuv", "ithanai", "illamale", "velivantha"}
-	for _, input := range inputs {
-
-		fmt.Println("====================================================")
-
-		t = trieRoot
-		var suggestions []string
-		for _, k := range input {
-			fmt.Printf("\n%c\n-----------\n", k)
-			suggestions, t = t.GetSuggestions(byte(k))
-			for _, suggestion := range suggestions {
-				fmt.Println(suggestion)
-			}
-		}
-	}
-}
