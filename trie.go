@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"os"
 	"io/ioutil"
-	"strings"
+	"os"
 	"strconv"
+	"strings"
 )
 
 type result struct {
