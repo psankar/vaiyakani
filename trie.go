@@ -104,11 +104,11 @@ func (t *trie) PrintAsJSON() {
 		fmt.Printf("\"%s\": {\n", string(k))
 
 		if len(ch.values) != 0 {
-			for _, value := range ch.values {
+			for _, _ = range ch.values {
 				for j := 0; j < indentLevel+4; j++ {
 					fmt.Print(" ")
 				}
-				fmt.Printf("\"value\": \"%s\",\n", value.word)
+				fmt.Printf("\"value\": \"1234567\",\n")
 			}
 		}
 		printAsJSON(ch, indentLevel+4)
@@ -131,7 +131,7 @@ func printAsJSON(t *trie, indentLevel int) {
 			for j := 0; j < indentLevel+4; j++ {
 				fmt.Print(" ")
 			}
-			fmt.Printf("\"value\": \"%s\",\n", ch.values[0].word)
+			fmt.Printf("\"value\": \"1234567\",\n")
 		}
 		printAsJSON(ch, indentLevel+4)
 
