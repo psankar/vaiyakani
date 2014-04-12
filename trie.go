@@ -142,9 +142,8 @@ func printAsJSON(t *trie, indentLevel int) {
 	}
 }
 
-var t, trieRoot *trie
-
 func main() {
+	var t *trie
 
 	fmt.Println("{")
 
@@ -184,8 +183,7 @@ func main() {
 
 		}
 
-		trieRoot = t
-		trieRoot.PrintAsJSON()
+		t.PrintAsJSON()
 	}
 
 	fmt.Println("}")
