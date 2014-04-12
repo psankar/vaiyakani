@@ -28,7 +28,7 @@ func (t *trie) AddWord(key []byte, value result) (status bool) {
 		child = i.children[ch]
 		if child == nil {
 			child = &trie{}
-			child.children = make(map[byte]*trie)
+			child.children = make(map[byte]*trie, 1)
 			i.children[ch] = child
 		}
 		i = child
@@ -40,7 +40,7 @@ func (t *trie) AddWord(key []byte, value result) (status bool) {
 func NewTrie() *trie {
 	t := &trie{}
 	t.key = '/'
-	t.children = make(map[byte]*trie)
+	t.children = make(map[byte]*trie, 26)
 
 	return t
 }
