@@ -14,22 +14,22 @@ type result struct {
 }
 
 type trie struct {
-	key      byte
-	children map[byte]*trie
+	key      string
+	children map[string]*trie
 	values   []result
 }
 
-func (t *trie) AddWord(key []byte, value result) (status bool) {
+func (t *trie) AddWord(key string, value result) (status bool) {
 
 	var child *trie
 
 	i := t
 	for _, ch := range key {
-		child = i.children[ch]
+		child = i.children[string(ch)]
 		if child == nil {
 			child = &trie{}
-			child.children = make(map[byte]*trie, 1)
-			i.children[ch] = child
+			child.children = make(map[string]*trie, 1)
+			i.children[string(ch)] = child
 		}
 		i = child
 	}
@@ -39,27 +39,10 @@ func (t *trie) AddWord(key []byte, value result) (status bool) {
 
 func NewTrie() *trie {
 	t := &trie{}
-	t.key = '/'
-	t.children = make(map[byte]*trie, 26)
+	t.key = "/"
+	t.children = make(map[string]*trie, 26)
 
 	return t
-}
-
-func (t *trie) PrintTrie() {
-	fmt.Println("Trie Contents\n===========")
-	for k, ch := range t.children {
-		printChildren(ch, []byte{k})
-	}
-}
-
-func printChildren(t *trie, parent []byte) {
-	for k, ch := range t.children {
-		if len(ch.values) != 0 {
-			fmt.Printf("%s%c\t", string(parent), k)
-			fmt.Println(ch.values)
-		}
-		printChildren(ch, append(parent, k))
-	}
 }
 
 func getChildren(t *trie, suggestions *[]string) {
@@ -78,7 +61,7 @@ func getChildren(t *trie, suggestions *[]string) {
 
 }
 
-func (t *trie) GetSuggestions(ch byte) ([]string, *trie) {
+func (t *trie) GetSuggestions(ch string) ([]string, *trie) {
 	child := t.children[ch]
 	if child != nil {
 		var suggestions []string
@@ -174,7 +157,7 @@ func main() {
 					for _, englishWord := range englishWords {
 						//fmt.Print(englishWord, " ")
 						if rune(englishWord[0]) == ch {
-							t.AddWord([]byte(englishWord), result{tamilWord, score})
+							t.AddWord(string(englishWord), result{tamilWord, score})
 						}
 					}
 					//fmt.Println()
