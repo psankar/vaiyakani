@@ -31,9 +31,7 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 	for i := 0; i < len(key); i++ {
 		char := string(key[i])
 
-		/* Find if there is a child node for this exact char.
-		 * This may be the most frequent case based on initial
-		 * assumption. This may change after measurement. */
+		/* Find if there is a child node for this exact char */
 		child = iter.children[char]
 		if child != nil {
 			iter = child
@@ -44,9 +42,18 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 		 * begins with the incoming character */
 		for node := range iter.children {
 			//fmt.Fprintf(os.Stderr, "Key: [%s]\tNode: [%s]\t\n\a", key, node)
+
 			if node[0] == key[i] {
+				/* The first character has matched. So while exiting this block,
+				 * We would have created the new node for holding the incoming value.
+				 * In case, the key is already existing, we will append the incoming
+				 * value to the values that are already part of the key.
+				 * single key = multiple values is possible */
+
 				var j int
 
+				/* If the first letter is matching, check if the incoming key is matching the node,
+				 * and if so just add the incoming value, as another value for the node */
 				if node == key[i:] {
 					iter.children[node].values = append(iter.children[node].values, value)
 					return true
@@ -54,16 +61,30 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 
 				for j = 1; j < len(node) && ((j + i) < len(key)); {
 					if node[j] == key[i+j] {
+						/* Proceed until the next character in the incoming key
+						 * and the node are different. At some point they will have to be
+						 * different, as otherwise the previous block would have caught it */
 						j++
 						continue
 					} else {
-						/* Create two children for the
-						 * node. (1) The elements from j
-						 * until end of the current key.
-						 * (2) A new node from (i+j) of
-						 * the input key to the function
-						 * that was passed */
-
+						/* A character has differed between the incoming key and the character in
+						 * the node. So we need to split our trie at this point and create new children
+						 * to hold the two diverging paths as two different nodes.
+						 *
+						 * We will create three different nodes:
+						 *
+						 * node1 - a new node that will have characters from "node" until the
+						 * point where it diffes from the key. We will update this to the parent of node
+						 *
+						 * node2 - a new node that will be the child of node1. It will contain
+						 * the characters which were originally in "node" after the position of
+						 * difference with the incoming key. The values of the previous "node"
+						 * will become the values of this node.
+						 *
+						 * node3 - a new that will be the child of node1 and will contain the new
+						 * incoming value. The suffix that is different from the odl "node" will
+						 * be used as the key for identifying this child on node1's children list
+						 */
 						node2 := &trie{}
 						node2.children = make(map[string]*trie, 0)
 						node2.values = append(node2.values, iter.children[node].values...)
@@ -74,19 +95,8 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 
 						node1 := &trie{}
 						node1.children = make(map[string]*trie, 2)
-						//node1.values = nil
 						node1.children[node[j:]] = node2
 						node1.children[key[(i+j):]] = node3
-
-						/*
-													fmt.Fprintf(os.Stderr,
-							`Got node: [%s](%s) and key [%s]
-							Created children: [%s](%s) [%s](%s)
-							& modified the parent [%s]
-
-							`,
-													node, iter.values, key, node[j:], node2.values, key[(i+j):], node3.values, node[:j])
-						*/
 
 						iter.children[node].values = nil
 						delete(iter.children, node)
@@ -97,6 +107,10 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 				}
 
 				if len(key[i:]) > len(node) {
+					/* The incoming key is longer than the node string. But all the characters
+					 * in the node have matched the characters of the incoming key. So, we will
+					 * just create a new child for the node, with the pending suffix in key, as
+					 * the identifier for this new child */
 					child = &trie{}
 					child.children = make(map[string]*trie, 0)
 					child.values = append(child.values, value)
@@ -104,6 +118,12 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 					//fmt.Fprintf(os.Stderr, "Created a new child node (%s) only parent-key[%s]\n", child.values, key[len(node):])
 					return true
 				} else if len(key[i:]) < len(node) {
+					/* The incoming key is shorter than the node string. But all the characters
+					 * in the key have matched the node string. So we need to split the node, at
+					 * the last character of the incoming key, and the pending suffix in the node,
+					 * i.e, characters beyond len(key) in node will have to become a new node,
+					 * and this new node will have all the values that earlier belonged to the
+					 * old "node" */
 					node2 := &trie{}
 					node2.children = make(map[string]*trie, 0)
 					node2.values = append(node2.values, iter.children[node].values...)
@@ -118,14 +138,15 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 					iter.children[key[i:]] = node1
 					return true
 				} else {
-					fmt.Fprintf(os.Stderr, "Key: [%s]\tNode: [%s]\tToken: [%s]\n\a", key, node, key[i:])
-					panic("BUG")
+					/* A non-reachable condition */
+					panic("Unreachable Code")
 				}
 			}
 		}
 
-		/* Create a new patriciated node, with all the pending
-		 * english alphabets as the key */
+		/* Create a new node, with all the characters in the incoming key.
+		 * This will be executed if none of the first characters in the trie
+		 * match the first letter of the incoming key or if the trie is empty */
 		child = &trie{}
 		child.children = make(map[string]*trie, 0)
 		child.values = append(child.values, value)
@@ -143,68 +164,8 @@ func NewTrie() *trie {
 	return t
 }
 
-func getChildren(t *trie, suggestions *[]string) {
-	for _, ch := range t.children {
-		for _, value := range ch.values {
-			*suggestions = append(*suggestions, value.word)
-		}
-		getChildren(ch, suggestions)
-	}
-
-	if len(t.children) == 0 {
-		for _, value := range t.values {
-			*suggestions = append(*suggestions, value.word)
-		}
-	}
-
-}
-
-func (t *trie) GetSuggestions(ch string) ([]string, *trie) {
-	child := t.children[ch]
-	if child != nil {
-		var suggestions []string
-		getChildren(child, &suggestions)
-		return suggestions, child
-	} else if len(t.children) == 0 {
-		var suggestions []string
-		for _, value := range t.values {
-			suggestions = append(suggestions, value.word)
-		}
-		return suggestions, t
-	} else {
-		return nil, t
-	}
-}
-
 func (t *trie) PrintAsJSON() {
-
 	printAsJSON(t, 1)
-	/*
-
-		indentLevel := 4
-		for k, ch := range t.children {
-			for i := 0; i < indentLevel; i++ {
-				fmt.Print(" ")
-			}
-			fmt.Printf("\"%s\": {\n", string(k))
-
-			if len(ch.values) != 0 {
-				for _, value := range ch.values {
-					for j := 0; j < indentLevel+4; j++ {
-						fmt.Print(" ")
-					}
-					fmt.Printf("\"value\": \"%s\",\n", value.word)
-				}
-			}
-			printAsJSON(ch, indentLevel+4)
-
-			for i := 0; i < indentLevel; i++ {
-				fmt.Print(" ")
-			}
-			fmt.Println("},")
-		}
-
-	*/
 }
 
 func printAsJSON(t *trie, indentLevel int) {
@@ -238,6 +199,8 @@ func main() {
 
 	fmt.Println("{")
 
+	/* We will construct the trie for only words
+	 * starting with 'a' for now */
 	for ch := 'a'; ch <= 'a'; ch++ {
 		fmt.Fprintf(os.Stderr, "%c\n", ch)
 
