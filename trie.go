@@ -79,13 +79,13 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 						node1.children[key[(i+j):]] = node3
 
 						/*
-												fmt.Fprintf(os.Stderr,
-						`Got node: [%s](%s) and key [%s]
-						Created children: [%s](%s) [%s](%s)
-						& modified the parent [%s]
+													fmt.Fprintf(os.Stderr,
+							`Got node: [%s](%s) and key [%s]
+							Created children: [%s](%s) [%s](%s)
+							& modified the parent [%s]
 
-						`,
-												node, iter.values, key, node[j:], node2.values, key[(i+j):], node3.values, node[:j])
+							`,
+													node, iter.values, key, node[j:], node2.values, key[(i+j):], node3.values, node[:j])
 						*/
 
 						iter.children[node].values = nil
@@ -178,7 +178,7 @@ func (t *trie) GetSuggestions(ch string) ([]string, *trie) {
 
 func (t *trie) PrintAsJSON() {
 
-	printAsJSON(t, 4)
+	printAsJSON(t, 1)
 	/*
 
 		indentLevel := 4
@@ -210,24 +210,24 @@ func (t *trie) PrintAsJSON() {
 func printAsJSON(t *trie, indentLevel int) {
 	for k, ch := range t.children {
 		for i := 0; i < indentLevel; i++ {
-			fmt.Print(" ")
+			fmt.Print("\t")
 		}
 		fmt.Printf("\"%s\": {\n", string(k))
 
 		if len(ch.values) != 0 {
-			for j := 0; j < indentLevel+4; j++ {
-				fmt.Print(" ")
+			for j := 0; j < indentLevel+1; j++ {
+				fmt.Print("\t")
 			}
-			fmt.Printf("\"value\":")
+			fmt.Printf("\"value\":[")
 			for _, str := range ch.values {
 				fmt.Printf("\"%s\",", str.word)
 			}
-			fmt.Println()
+			fmt.Println("],")
 		}
-		printAsJSON(ch, indentLevel+4)
+		printAsJSON(ch, indentLevel+1)
 
 		for i := 0; i < indentLevel; i++ {
-			fmt.Print(" ")
+			fmt.Print("\t")
 		}
 		fmt.Println("},")
 	}
