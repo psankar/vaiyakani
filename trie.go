@@ -23,10 +23,6 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 
 	var child *trie
 
-	if value.word == "அடிமைகள்" {
-		fmt.Fprintf(os.Stderr, "Got \n")
-	}
-
 	iter := t
 	for i := 0; i < len(key); i++ {
 		char := string(key[i])
@@ -85,8 +81,10 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 						 * incoming value. The suffix that is different from the odl "node" will
 						 * be used as the key for identifying this child on node1's children list
 						 */
+
 						node2 := &trie{}
-						node2.children = make(map[string]*trie, 0)
+						//node2.children = make(map[string]*trie, 0)
+						node2.children = iter.children[node].children
 						node2.values = append(node2.values, iter.children[node].values...)
 
 						node3 := &trie{}
@@ -194,6 +192,46 @@ func printAsJSON(t *trie, indentLevel int) {
 	}
 }
 
+func (t *trie) SearchForString(input string) string {
+
+	//	fmt.Fprintf(os.Stderr, "\n\nSearching for input string: [%s]\n", input)
+
+	active := t
+	result := ""
+
+	i := 0
+
+findLetter:
+	for i < len(input) {
+
+		letter := input[i]
+		//	fmt.Fprintf(os.Stderr, "Searching for single character [%c]\n", letter)
+
+		if active.children[string(letter)] != nil {
+			active = active.children[string(letter)]
+			i++
+			//	fmt.Fprintf(os.Stderr, "Exact character match for [%c]\n", letter)
+			continue
+		} else {
+			for k, nodes := range active.children {
+				//		fmt.Fprintf(os.Stderr, "Checking prefix for string [%s]\n", k)
+				if strings.HasPrefix(input[i:], k) {
+					//fmt.Fprintf(os.Stderr, "Prefix match found [%s]\n", nodes)
+					active = nodes
+					i += len(k)
+					goto findLetter
+				}
+			}
+			//	fmt.Fprintf(os.Stderr, "Could not find the input string\n")
+			return result
+		}
+	}
+
+	//	fmt.Fprintf(os.Stderr, "Found the input string\n")
+
+	return active.values[0].word
+}
+
 func main() {
 	var t *trie
 
@@ -201,7 +239,7 @@ func main() {
 
 	/* We will construct the trie for only words
 	 * starting with 'a' for now */
-	for ch := 'a'; ch <= 'a'; ch++ {
+	for ch := 'a'; ch <= 'z'; ch++ {
 		fmt.Fprintf(os.Stderr, "%c\n", ch)
 
 		t = NewTrie()
@@ -219,6 +257,7 @@ func main() {
 			* linux style file line endings */
 			for _, line := range lines {
 				if line != "" {
+					//fmt.Fprintf(os.Stderr, "Reading Line [%s]\n", line)
 					contents := strings.Split(line, ",")
 					score, _ := strconv.Atoi(contents[0])
 					tamilWord := contents[1:][0]
@@ -236,7 +275,6 @@ func main() {
 			}
 
 		}
-
 		t.PrintAsJSON()
 	}
 
