@@ -1,0 +1,28 @@
+.bezel {
+	background: #002b36;
+	color: white;
+	height: 100%;
+	padding: 4px
+}
+
+.header {
+	background: lightgrey;
+	color: black
+}
+
+.contentarea {
+	background: #002b36;
+	color: white
+}
+
+.editorpane {
+	width: 100%;
+	background: #002b36;
+	color: white;
+	height: 88%
+}
+
+button:last-child {
+	color: red;
+	float: right
+}

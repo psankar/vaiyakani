@@ -1,8 +1,21 @@
 <!DOCTYPE html>
-<html>
-  <head>
-  </head>
-  <body>
-    <div>Hello, world!</div>
-  </body>
+<html class=bezel>
+<head>
+<link href="editor.css" rel="stylesheet" type="text/css" />
+</head>
+<body class="bezel">
+<div class="header">
+	<button id="chooseFile">Open File</button>
+	<span id="fileDetails" hidden>
+		<b>Path:</b> <span id="filePath"></span>
+		<b>Size:</b> <span id="fileSize"></span> bytes
+		<button id="fileSave">Save</button>
+	</span>
+</div>
+<!--	<div id="editorArea" class="contentarea" contenteditable="true"></div> -->
+<p class="bezel">
+<textarea class="editorpane" hidden></textarea>
+</p>
+<script src=editor.js></script>
+</body>
 </html>
