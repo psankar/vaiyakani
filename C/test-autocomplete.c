@@ -64,7 +64,7 @@ int main()
 
 	ret =
 	    sqlite3_prepare_v2(db,
-			       "SELECT tamil FROM autocomplete WHERE english LIKE ? ORDER BY score DESC LIMIT 5",
+			       "SELECT DISTINCT tamil FROM autocomplete WHERE english LIKE ? ORDER BY score DESC LIMIT 5",
 			       -1, &stmt, NULL);
 
 	if (SQLITE_OK != ret) {
