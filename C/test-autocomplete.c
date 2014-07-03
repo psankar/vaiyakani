@@ -21,6 +21,8 @@ void kb()
 	char search_string[24] = "";
 
 	const gchar *prefix = gtk_entry_get_text(GTK_ENTRY(entry));
+	if (strlen(prefix) < 1)
+		return;
 	strncpy(search_string, (char *)prefix, 23);
 	strcat(search_string, "%%");
 	fprintf(stderr, "Prefix is: [%s]\tString searched is: [%s]\n", prefix,
