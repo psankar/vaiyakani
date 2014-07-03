@@ -33,6 +33,8 @@ void kb()
 		return;
 	}
 
+	time_t start;
+	start = time(NULL);
 	while (1) {
 		ret = sqlite3_step(stmt);
 		if (ret == SQLITE_ROW) {
@@ -45,6 +47,9 @@ void kb()
 			break;
 		}
 	}
+	time_t end;
+	end = time(NULL);
+	fprintf(stderr, "Query took [%f] seconds\n", difftime(end, start));
 	sqlite3_reset(stmt);
 
 	gtk_label_set_text(GTK_LABEL(suggestions), results);
