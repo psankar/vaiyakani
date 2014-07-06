@@ -73,9 +73,9 @@ static int disk_to_mem_cb(void *data, int argc, char **argv, char **azColName)
 
 	if (SQLITE_DONE != sqlite3_step(stmt)) {
 		printf
-				    ("Error executing the prepared statement: %s\n",
-				     sqlite3_errmsg(db));
-				     return -1;
+		    ("Error executing the prepared statement: %s\n",
+		     sqlite3_errmsg(db));
+		return -1;
 	}
 
 	return 0;
@@ -86,7 +86,8 @@ int main()
 	int ret;
 	sqlite3 *disk_db = NULL;
 
-	fprintf(stderr, "Opening disk database and trying to create the in memory database\n");
+	fprintf(stderr,
+		"Opening disk database and trying to create the in memory database\n");
 	ret =
 	    sqlite3_open_v2("ta-wiki.sqlite", &disk_db, SQLITE_OPEN_READONLY,
 			    NULL);
@@ -100,7 +101,8 @@ int main()
 		if (db == NULL)
 			fprintf(stderr, "Insufficient Memory\n");
 		else
-			printf("Error opening database: %s\n", sqlite3_errmsg(db));
+			printf("Error opening database: %s\n",
+			       sqlite3_errmsg(db));
 		goto close_and_end;
 	}
 
@@ -131,7 +133,10 @@ int main()
 	}
 
 	/* Select each record from the disk db and insert into the in-memory table */
-	ret = sqlite3_exec(disk_db, "SELECT english, tamil, score FROM autocomplete", disk_to_mem_cb, NULL, &err);
+	ret =
+	    sqlite3_exec(disk_db,
+			 "SELECT english, tamil, score FROM autocomplete",
+			 disk_to_mem_cb, NULL, &err);
 	if (SQLITE_OK != ret) {
 		printf("Error conversion of disk_to_mem: %s\n",
 		       sqlite3_errmsg(db));
