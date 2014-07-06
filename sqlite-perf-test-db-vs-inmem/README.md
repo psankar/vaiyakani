@@ -6,6 +6,6 @@ Use `make` to build all the binaries.
 
 
 ###Lessons Learnt:
-* In my Thinkpad T430 with 8 GB RAM and QUAD core processor, both the programs took approximately 2 seconds for ta-wiki.sqlite which is about 2GB in size and had 8019817 records, with 3 columns.
+* In my Thinkpad T430 with 8 GB RAM and QUAD core processor, both the programs took approximately 2 seconds for ta-wiki.sqlite which is about 560MB in size and had 8019817 records, with 3 columns.
 * We need better search algorithms (for auto-completion) that work recursively (like a trie-cursor moder), instead of a full-table scan all the time.
 * in-memory vs disk does not matter if you have sufficient RAM. The linux kernel page mapping and/or the sqlite caching layer work really well, that choosing in-memory may never be useful. No wonder mongodb chose to let the linux kernel take care of caching.
