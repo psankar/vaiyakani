@@ -1,4 +1,4 @@
-Use `make` to build all the binaries.
+Use `make` to build all the binaries. Install glib2-devel gtk+-3-devel sqlite3-devel packages before you build.
 
 * **create-db**: This will take a .englishwords file generated from the previous folder and will generate a .sqlite database.
 * **test-autocomplete-from-sqlite**: This will autocomplete from the .sqlite database created from the previous step. The time taken for each keypress auto-completion will be printed in the terminal where you launch this.
