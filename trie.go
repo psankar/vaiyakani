@@ -19,7 +19,13 @@ type trie struct {
 	values   []result
 }
 
-func (t *trie) AddWord(key string, value result) (status bool) {
+type Trie struct {
+	t *trie
+	search_head *trie
+}
+
+func (T *Trie) AddWord(key string, value result) (status bool) {
+	t := T.t
 
 	var child *trie
 
@@ -154,16 +160,19 @@ func (t *trie) AddWord(key string, value result) (status bool) {
 	return false
 }
 
-func NewTrie() *trie {
+func NewTrie() *Trie {
+	T := &Trie{}
+
 	t := &trie{}
 	t.key = "/"
 	t.children = make(map[string]*trie, 26)
 
-	return t
+	T.t = t
+	return T
 }
 
-func (t *trie) PrintAsJSON() {
-	printAsJSON(t, 1)
+func (T *Trie) PrintAsJSON() {
+	printAsJSON(T.t, 1)
 }
 
 func printAsJSON(t *trie, indentLevel int) {
@@ -191,9 +200,10 @@ func printAsJSON(t *trie, indentLevel int) {
 	}
 }
 
-func (t *trie) SearchForString(input string) string {
+func (T *Trie) SearchForString(input string) string {
 
 	//	fmt.Fprintf(os.Stderr, "\n\nSearching for input string: [%s]\n", input)
+	t := T.t
 
 	active := t
 	result := ""
@@ -232,9 +242,9 @@ findLetter:
 }
 
 func main() {
-	var t *trie
+	var T *Trie
 
-	t = NewTrie()
+	T = NewTrie()
 	for _, engTransliteratedFile := range os.Args[1:] {
 		fileBytes, err := ioutil.ReadFile(engTransliteratedFile)
 		if err != nil {
@@ -258,16 +268,15 @@ func main() {
 				//fmt.Print(score, tamilWord)
 				for _, englishWord := range englishWords {
 					//fmt.Print(englishWord, " ")
-					t.AddWord(string(englishWord), result{tamilWord, score})
+					T.AddWord(string(englishWord), result{tamilWord, score})
 				}
 			}
 		}
 	}
 
+	/* Print Trie */
 	fmt.Fprintf(os.Stderr, "Trie construction complete. Now about to print.\n")
-	/* Print Trie
-	*/
 	fmt.Println("[")
-	t.PrintAsJSON()
+	T.PrintAsJSON()
 	fmt.Println("]")
 }
