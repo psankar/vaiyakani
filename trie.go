@@ -171,24 +171,23 @@ func printAsJSON(t *trie, indentLevel int) {
 		for i := 0; i < indentLevel; i++ {
 			fmt.Print("\t")
 		}
-		fmt.Printf("\"%s\": {\n", string(k))
+		fmt.Printf("{\"%s\": [\n", string(k))
 
 		if len(ch.values) != 0 {
 			for j := 0; j < indentLevel+1; j++ {
 				fmt.Print("\t")
 			}
-			fmt.Printf("\"value\":[")
 			for _, str := range ch.values {
 				fmt.Printf("{\"word\":\"%s\", \"score\":\"%d\"},", str.word, str.score)
 			}
-			fmt.Println("],")
 		}
+		fmt.Println()
 		printAsJSON(ch, indentLevel+1)
 
 		for i := 0; i < indentLevel; i++ {
 			fmt.Print("\t")
 		}
-		fmt.Println("},")
+		fmt.Println("]},")
 	}
 }
 
@@ -265,9 +264,10 @@ func main() {
 		}
 	}
 
+	fmt.Fprintf(os.Stderr, "Trie construction complete. Now about to print.\n")
 	/* Print Trie
-	fmt.Println("{")
-	t.PrintAsJSON()
-	fmt.Println("}")
 	*/
+	fmt.Println("[")
+	t.PrintAsJSON()
+	fmt.Println("]")
 }
