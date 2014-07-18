@@ -179,7 +179,7 @@ func printAsJSON(t *trie, indentLevel int) {
 			}
 			fmt.Printf("\"value\":[")
 			for _, str := range ch.values {
-				fmt.Printf("\"%s\",", str.word)
+				fmt.Printf("{\"word\":\"%s\", \"score\":\"%d\"},", str.word, str.score)
 			}
 			fmt.Println("],")
 		}
