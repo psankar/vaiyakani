@@ -235,48 +235,39 @@ findLetter:
 func main() {
 	var t *trie
 
-	fmt.Println("{")
+	t = NewTrie()
+	for _, engTransliteratedFile := range os.Args[1:] {
+		fileBytes, err := ioutil.ReadFile(engTransliteratedFile)
+		if err != nil {
+			fmt.Println("Error opening file:")
+			fmt.Println(err)
+			continue
+		}
 
-	/* We will construct the trie for only words
-	 * starting with 'a' for now */
-	for ch := 'a'; ch <= 'z'; ch++ {
-		fmt.Fprintf(os.Stderr, "%c\n", ch)
+		lines := strings.Split(string(fileBytes), "\n")
 
-		t = NewTrie()
-		for _, engTransliteratedFile := range os.Args[1:] {
-			fileBytes, err := ioutil.ReadFile(engTransliteratedFile)
-			if err != nil {
-				fmt.Println("Error opening file:")
-				fmt.Println(err)
-				continue
-			}
+		/* note that this will work with only
+		 * linux style file line endings */
+		for _, line := range lines {
+			if line != "" {
+				//fmt.Fprintf(os.Stderr, "Reading Line [%s]\n", line)
+				contents := strings.Split(line, ",")
+				score, _ := strconv.Atoi(contents[0])
+				tamilWord := contents[1:][0]
+				englishWords := contents[2:]
 
-			lines := strings.Split(string(fileBytes), "\n")
-
-			/* note that this will work with only
-			* linux style file line endings */
-			for _, line := range lines {
-				if line != "" {
-					//fmt.Fprintf(os.Stderr, "Reading Line [%s]\n", line)
-					contents := strings.Split(line, ",")
-					score, _ := strconv.Atoi(contents[0])
-					tamilWord := contents[1:][0]
-					englishWords := contents[2:]
-
-					//fmt.Print(score, tamilWord)
-					for _, englishWord := range englishWords {
-						//fmt.Print(englishWord, " ")
-						if rune(englishWord[0]) == ch {
-							t.AddWord(string(englishWord), result{tamilWord, score})
-						}
-					}
-					//fmt.Println()
+				//fmt.Print(score, tamilWord)
+				for _, englishWord := range englishWords {
+					//fmt.Print(englishWord, " ")
+					t.AddWord(string(englishWord), result{tamilWord, score})
 				}
 			}
-
 		}
-		t.PrintAsJSON()
 	}
 
+	/* Print Trie
+	fmt.Println("{")
+	t.PrintAsJSON()
 	fmt.Println("}")
+	*/
 }
