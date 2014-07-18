@@ -21,7 +21,7 @@ type trie struct {
 
 type Trie struct {
 	t *trie
-	search_head *trie
+	searchHead *trie
 }
 
 func (T *Trie) AddWord(key string, value result) (status bool) {
