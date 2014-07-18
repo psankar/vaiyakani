@@ -168,6 +168,7 @@ func NewTrie() *Trie {
 	t.children = make(map[string]*trie, 26)
 
 	T.t = t
+	T.searchHead = t
 	return T
 }
 
@@ -199,11 +200,14 @@ func printAsJSON(t *trie, indentLevel int) {
 		fmt.Println("]},")
 	}
 }
+func (T *Trie) ResetSearchHead() {
+	T.searchHead = T.t
+}
 
 func (T *Trie) SearchForString(input string) string {
 
 	//	fmt.Fprintf(os.Stderr, "\n\nSearching for input string: [%s]\n", input)
-	t := T.t
+	t := T.searchHead
 
 	active := t
 	result := ""
