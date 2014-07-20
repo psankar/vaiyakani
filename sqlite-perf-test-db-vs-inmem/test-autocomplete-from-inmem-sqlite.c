@@ -89,7 +89,7 @@ int main()
 	fprintf(stderr,
 		"Opening disk database and trying to create the in memory database\n");
 	ret =
-	    sqlite3_open_v2("ta-wiki.sqlite", &disk_db, SQLITE_OPEN_READONLY,
+	    sqlite3_open_v2("autocomplete.sqlite", &disk_db, SQLITE_OPEN_READONLY,
 			    NULL);
 	if (SQLITE_OK != ret) {
 		printf("Error opening database: %s\n", sqlite3_errmsg(disk_db));
@@ -109,7 +109,7 @@ int main()
 	char *err;
 	ret =
 	    sqlite3_exec(db,
-			 "CREATE TABLE autocomplete (english varchar2, tamil varchar2, score int)",
+			 "CREATE TABLE autocomplete (english TEXT COLLATE NOCASE, tamil TEXT COLLATE NOCASE, score int)",
 			 NULL, NULL, &err);
 	if (SQLITE_OK != ret) {
 		printf("Error creating sqlite table: %s\n", sqlite3_errmsg(db));
@@ -152,7 +152,36 @@ int main()
 	sqlite3_finalize(stmt);
 	sqlite3_close(disk_db);
 
-	fprintf(stderr, "In-memory database creation complete\n");
+	fprintf(stderr, "In-memory database creation complete. About to create Indexes.\n");
+
+	/* Create Indexes */
+	fprintf(stderr, "Data inserted into tables. About to create english index\n");
+	ret = sqlite3_exec(db, "CREATE INDEX english_idx ON autocomplete (english)", NULL, NULL, &err);
+	if (SQLITE_OK != ret) {
+		printf("Error creating an index for the english column: %s\n",
+		       sqlite3_errmsg(db));
+	}
+
+	fprintf(stderr, "Index created for english. Now creating index for english + tamil\n");
+	ret = sqlite3_exec(db, "CREATE INDEX eng_tam_idx ON autocomplete (english, tamil)", NULL, NULL, &err);
+	if (SQLITE_OK != ret) {
+		printf("Error creating an index for the english+tamil columns: %s\n",
+		       sqlite3_errmsg(db));
+	}
+
+	fprintf(stderr, "Index created for english + tamil. Now creating index for english + tamil + score\n");
+	ret = sqlite3_exec(db, "CREATE INDEX eng_tam_score_idx ON autocomplete (english, tamil, score)", NULL, NULL, &err);
+	if (SQLITE_OK != ret) {
+		printf("Error creating an index for the english+tamil+score columns: %s\n",
+		       sqlite3_errmsg(db));
+	}
+
+	fprintf(stderr, "Index created for english + tamil + score. Now creating index for english + score\n");
+	ret = sqlite3_exec(db, "CREATE INDEX english_score_idx ON autocomplete (english, score)", NULL, NULL, &err);
+	if (SQLITE_OK != ret) {
+		printf("Error creating an index for the english+tamil+score columns: %s\n",
+		       sqlite3_errmsg(db));
+	}
 
 	ret =
 	    sqlite3_prepare_v2(db,
