@@ -11,3 +11,6 @@ test-autocomplete-from-sqlite: test-autocomplete-from-sqlite.c
 
 test-autocomplete-from-inmem-sqlite: test-autocomplete-from-inmem-sqlite.c
 	$(CC) $(CFLAGS) $< -o $@ $(LDFLAGS)
+
+clean:
+	rm create-sqlite-db test-autocomplete-from-sqlite test-autocomplete-from-inmem-sqlite
